@@ -285,7 +285,7 @@
           <h2>What you want to eat?</h2>
           <p>Calculate Calories</p>
         </div>
-        <form role="form">
+        <form role="form" id="calories-form">
           <div class="row">
             <div class="col-md-6 form-group">
               <label for="food">Food:</label>
@@ -303,25 +303,26 @@
               <input type="text" class="form-control" name="weight" id="weight" placeholder="Weight in grams" required>
             </div>
           </div>
-
+        
           <hr>
-
+        
           <div class="text-center "><button type="submit" class="btn btn-secondary">Calculate</button></div>
-
+        
           <p id="calories-output"></p>
-
+        
           <script>
-            const form = document.querySelector('form');
+            const calories_form = document.querySelector('#calories-form');
             const foodInput = document.querySelector('#food');
             const weightInput = document.querySelector('#weight');
-
-            form.addEventListener('submit', function (event) {
+            const caloriesOutput = document.querySelector('#calories-output');
+        
+            calories_form.addEventListener('submit', function (event) {
               event.preventDefault();
-
+        
               const food = foodInput.value;
               const weight = weightInput.value;
               let calories = 0;
-
+        
               switch (food) {
                 case 'apple':
                   calories = weight * 0.52;
@@ -342,12 +343,12 @@
                   calories = 0;
                   break;
               }
-
-              const caloriesOutput = document.querySelector('#calories-output');
-              caloriesOutput.textContent = `The ${weight} grams of ${food} has ${calories.toFixed(2)} calories.`;
+        
+              caloriesOutput.textContent = `The ${weight} ounces of ${food} has ${calories.toFixed(2)} calories.`;
             });
           </script>
         </form>
+        
 
       </div>
 
