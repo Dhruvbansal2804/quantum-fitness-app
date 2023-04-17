@@ -1,7 +1,5 @@
-# GabLogics Fitness App
-link: https://gablogics.netlify.app/
+# Quantum Fitness App
 
-#### *The backend will be added soon.
 
 ### My idea of the functions that such a system should have are the following:
 - <b> Exercises for each muscle group of the body. </b> Better physical appearance through exercise is actually the main goal of this system. 
