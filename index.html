@@ -29,6 +29,23 @@
 
   <!-- Template Main CSS File -->
   <link href="assets/css/style.css" rel="stylesheet">
+
+  <!-- Include Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-database.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBHm3CEGbLUmsB-DtjssAJtoPziQAeCg3Q",
+      authDomain: "quantum-fitness-app.firebaseapp.com",
+      projectId: "quantum-fitness-app",
+      storageBucket: "quantum-fitness-app.appspot.com",
+      messagingSenderId: "206263970313",
+      appId: "1:206263970313:web:dc9b09eae864a8e7e466d8",
+      measurementId: "G-SGHB6RWY8G"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
 </head>
 
 <body>
@@ -52,7 +69,132 @@
         <i class="bi bi-list mobile-nav-toggle"></i>
       </nav><!-- .navbar -->
 
-      <a href="#about" class="get-started-btn scrollto">Register</a>
+      <a href="#about" class="get-started-btn scrollto" id="register-btn">Register</a>
+      <!-- Popup -->
+      <div id="register-form" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>Register</h2>
+          <form id="register-form">
+            <div class="form-group">
+              <label for="name">Name:</label>
+              <input type="text" class="form-control" id="name" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email:</label>
+              <input type="email" class="form-control" id="email" required>
+            </div>
+            <div class="form-group">
+              <label for="password">Password:</label>
+              <input type="password" class="form-control" id="password" required>
+            </div>
+            <div class="form-group">
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+          </form>
+          <div id="register-feedback"></div>
+        </div>
+      </div>
+      <style>
+        .modal {
+          display: none;
+          /* Hidden by default */
+          position: fixed;
+          /* Stay in place */
+          z-index: 1;
+          /* Sit on top */
+          left: 0;
+          top: 0;
+          width: 100%;
+          /* Full width */
+          height: 100%;
+          /* Full height */
+          overflow: auto;
+          /* Enable scroll if needed */
+          background-color: rgba(0, 0, 0, 0.4);
+          /* Black w/ opacity */
+        }
+
+        .modal-content {
+          background-color: #fefefe;
+          margin: 10% auto;
+          padding: 20px;
+          border: 1px solid #888;
+          width: 50%;
+        }
+
+        .close {
+          color: #aaa;
+          float: right;
+          font-size: 28px;
+          font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+          color: black;
+          text-decoration: none;
+          cursor: pointer;
+        }
+      </style>
+
+      <!-- JavaScript for pop-up form -->
+      <script>
+        const registerBtn = document.querySelector('#register-btn');
+        const registerForm = document.querySelector('#register-form');
+        const nameInput = document.querySelector('#name');
+        const emailInput = document.querySelector('#email');
+        const passwordInput = document.querySelector('#password');
+        const feedback = document.querySelector('#register-feedback');
+        const firebaseRef = firebase.database().ref('users');
+
+        // Show pop-up form when button is clicked
+        registerBtn.addEventListener('click', function (event) {
+          event.preventDefault();
+          registerForm.style.display = 'block';
+        });
+
+        // Close pop-up form when user clicks on X button
+        const closeButton = document.querySelector('.close');
+        closeButton.addEventListener('click', function () {
+          registerForm.style.display = 'none';
+        });
+
+        // Close pop-up form when user clicks outside of the form
+        window.addEventListener('click', function (event) {
+          if (event.target === registerForm) {
+            registerForm.style.display = 'none';
+          }
+        });
+
+        // Add user to database on form submit
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function (event) {
+          event.preventDefault();
+          const name = nameInput.value;
+          const email = emailInput.value;
+          const password = passwordInput.value;
+          // Check if user already exists in database
+          firebaseRef.orderByChild('email').equalTo(email).once('value', function (snapshot) {
+            if (snapshot.exists()) {
+              feedback.innerHTML = 'User already exists';
+            } else {
+              firebaseRef.push({
+                name: name,
+                email: email,
+                password: password
+              });
+              feedback.innerHTML = 'User registered successfully';
+            }
+          });
+          // Clear form inputs
+          nameInput.value = '';
+          emailInput.value = '';
+          passwordInput.value = '';
+          // Close pop-up form
+          registerForm.style.display = 'none';
+        });
+      </script>
 
     </div>
   </header><!-- End Header -->
@@ -146,44 +288,67 @@
         <form role="form">
           <div class="row">
             <div class="col-md-6 form-group">
-              <input type="text" name="food" class="form-control" id="food" placeholder="Food" required>
+              <label for="food">Food:</label>
+              <select name="food" class="form-control" id="food" required>
+                <option value="">Please select a food</option>
+                <option value="apple">Apple</option>
+                <option value="banana">Banana</option>
+                <option value="chicken">Chicken</option>
+                <option value="salmon">Salmon</option>
+                <option value="pizza">Pizza</option>
+              </select>
             </div>
             <div class="col-md-6 form-group mt-3 mt-md-0">
-              <input type="text" class="form-control" name="calories" id="calories" placeholder="Weight of the Food"
-                required>
+              <label for="weight">Weight of the Food (in ounces)</label>
+              <input type="text" class="form-control" name="weight" id="weight" placeholder="Weight in grams" required>
             </div>
-            <!-- <script>
-              function calculateCaloriesBurned(activity, weight, duration) {
-                let caloriesBurned = 0;
-                
-                switch(activity.toLowerCase()) {
-                  case 'running':
-                    caloriesBurned = (weight * 0.75) * duration;
-                    break;
-                  case 'cycling':
-                    caloriesBurned = (weight * 0.60) * duration;
-                    break;
-                  case 'swimming':
-                    caloriesBurned = (weight * 0.55) * duration;
-                    break;
-                  default:
-                    console.log('Invalid activity');
-                }
-                
-                return caloriesBurned;
-              }
-              
-              // Example usage
-              let calories = calculateCaloriesBurned('running', 70, 30); // Calculates calories burned during 30 minutes of running for a person weighing 70 kg
-              console.log(`Calories burned: ${calories}`);
-              
-            </script> -->
           </div>
 
           <hr>
 
           <div class="text-center "><button type="submit" class="btn btn-secondary">Calculate</button></div>
+
+          <p id="calories-output"></p>
+
+          <script>
+            const form = document.querySelector('form');
+            const foodInput = document.querySelector('#food');
+            const weightInput = document.querySelector('#weight');
+
+            form.addEventListener('submit', function (event) {
+              event.preventDefault();
+
+              const food = foodInput.value;
+              const weight = weightInput.value;
+              let calories = 0;
+
+              switch (food) {
+                case 'apple':
+                  calories = weight * 0.52;
+                  break;
+                case 'banana':
+                  calories = weight * 0.89;
+                  break;
+                case 'chicken':
+                  calories = weight * 2.09;
+                  break;
+                case 'salmon':
+                  calories = weight * 2.54;
+                  break;
+                case 'pizza':
+                  calories = weight * 2.65;
+                  break;
+                default:
+                  calories = 0;
+                  break;
+              }
+
+              const caloriesOutput = document.querySelector('#calories-output');
+              caloriesOutput.textContent = `The ${weight} grams of ${food} has ${calories.toFixed(2)} calories.`;
+            });
+          </script>
         </form>
+
       </div>
 
       </div>
